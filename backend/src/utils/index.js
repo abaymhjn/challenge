@@ -17,6 +17,20 @@ const {
 } = require("./check-notice-permission");
 const { validateRequest } = require("./validate-request");
 const { formatMyPermission } = require("./format-my-permission");
+const { 
+    isValidEmail, 
+    isValidPhone, 
+    isValidName, 
+    sanitizeEmail, 
+    sanitizePhone, 
+    sanitizeName,
+    sanitizeText,
+    sanitizeHtml,
+    sanitizeSqlInput,
+    sanitizeInput,
+    validateAndSanitize,
+    normalizeWhitespace
+} = require("./validation-helpers");
 
 module.exports = {
     ApiError,
@@ -38,5 +52,18 @@ module.exports = {
     checkNoticeDeletePermission,
     checkNoticeRejectPermission,
     validateRequest,
-    formatMyPermission
+    formatMyPermission,
+    isValidEmail,
+    isValidPhone,
+    isValidName,
+    sanitizeEmail,
+    sanitizePhone,
+    sanitizeName,
+    sanitizeText,
+    sanitizeHtml,
+    sanitizeSqlInput,
+    sanitizeInput,
+    validateAndSanitize,
+    normalizeWhitespace
 };
+

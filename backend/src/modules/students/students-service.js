@@ -45,6 +45,7 @@ const addNewStudent = async (payload) => {
             return { message: ADD_STUDENT_AND_BUT_EMAIL_SEND_FAIL }
         }
     } catch (error) {
+        console.error("Error in addNewStudent service:", error);
         throw new ApiError(500, "Unable to add student");
     }
 }

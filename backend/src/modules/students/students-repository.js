@@ -38,7 +38,11 @@ const findAllStudents = async (payload) => {
     }
 
     query += ' ORDER BY t1.id';
-
+    const rawQuery = queryParams.reduce(
+    (q, val, i) => q.replace(new RegExp(`\\$${i + 1}\\b`, 'g'), `'${val}'`),
+    query
+);
+console.log("Raw Query:", rawQuery);
     const { rows } = await processDBRequest({ query, queryParams });
     return rows;
 }

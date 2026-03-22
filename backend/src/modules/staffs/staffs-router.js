@@ -1,11 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const staffsController = require("./staffs-controller");
+const { validateRequest } = require("../../utils/validate-request");
+const { StaffSchema, StaffFilterSchema, StaffStatusSchema } = require("./staffs-schema");
 
-router.get("", staffsController.handleGetAllStaffs);
-router.post("", staffsController.handleAddStaff);
+router.get("", validateRequest(StaffFilterSchema), staffsController.handleGetAllStaffs);
+router.post("", validateRequest(StaffSchema), staffsController.handleAddStaff);
 router.get("/:id", staffsController.handleGetStaff);
-router.put("/:id", staffsController.handleUpdateStaff);
-router.post("/:id/status", staffsController.handleReviewStaffStatus);
+router.put("/:id", validateRequest(StaffSchema), staffsController.handleUpdateStaff);
+router.post("/:id/status", validateRequest(StaffStatusSchema), staffsController.handleReviewStaffStatus);
 
 module.exports = { staffsRoutes: router };
