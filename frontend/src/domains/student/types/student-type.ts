@@ -23,10 +23,10 @@ export type Student = {
 
 export type StudentFilterState = {
   classes: ClassPropsWithId[];
-  class: string;
+  className: string;
   section: string;
   name: string;
-  roll: string;
+  roll: number | undefined;
 };
 
 export type StudentFilterActions =

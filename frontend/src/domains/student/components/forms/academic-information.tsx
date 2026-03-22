@@ -100,6 +100,7 @@ export const AcademicInformation = () => {
             error={Boolean(errors.roll)}
             helperText={errors.roll?.message}
             label='Roll'
+            type='number'
             size='small'
             slotProps={{ inputLabel: { shrink: true } }}
           />

@@ -5,6 +5,7 @@ const {
   fetchNoticeDetailById,
   addNotice,
   updateNotice,
+  deleteNotice,
   processNoticeStatus,
   processAddNoticeRecipient,
   processUpdateNoticeRecipient,
@@ -80,6 +81,12 @@ const handleUpdateNotice = asyncHandler(async (req, res) => {
   res.json(message);
 });
 
+const handleDeleteNotice = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const message = await deleteNotice(id);
+  res.json(message);
+});
+
 const handleNoticeStatus = asyncHandler(async (req, res) => {
   const { id: currentUserId, role: currentUserRole } = req.user;
   const { id: noticeId } = req.params;
@@ -96,6 +103,7 @@ module.exports = {
   handleFetchNoticeDetailById,
   handleAddNotice,
   handleUpdateNotice,
+  handleDeleteNotice,
   handleNoticeStatus,
   handleAddNoticeRecipient,
   handleUpdateNoticeRecipient,

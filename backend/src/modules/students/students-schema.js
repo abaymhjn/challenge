@@ -37,11 +37,11 @@ const StudentSchema = z.object({
             .string()
             .optional()
             .or(z.literal('')),
-        className: z
+        class: z
             .string()
             .optional()
             .or(z.literal('')),
-        sectionName: z
+        section: z
             .string()
             .optional()
             .or(z.literal('')),
@@ -153,6 +153,17 @@ const StudentFilterSchema = z.object({
 });
 
 /**
+ * Student update validation schema
+*/
+const StudentUpdateSchema = z.object({
+    body: StudentSchema.shape.body, // reuse same body validation
+    query: z.object({}).strict().optional(),
+    params: z.object({
+        id: z.string({ required_error: 'Student ID is required' })
+    }).strict()
+});
+
+/**
  * Student status update schema
  */
 const StudentStatusSchema = z.object({
@@ -169,5 +180,6 @@ const StudentStatusSchema = z.object({
 module.exports = {
     StudentSchema,
     StudentFilterSchema,
+    StudentUpdateSchema,
     StudentStatusSchema
 };

@@ -391,37 +391,39 @@ describe("Student Service", () => {
     describe("updateStudent", () => {
         describe("Positive Test Cases", () => {
             test("should update student successfully", async () => {
+                const id = 1;
                 const payload = {
-                    studentId: 1,
                     name: "Jane Smith Updated",
                     phone: "9876543220"
                 };
 
+                findUserById.mockResolvedValue({ id: 1, role_id: 3 });
                 addOrUpdateStudent.mockResolvedValue({
                     status: true,
                     message: "Student updated successfully"
                 });
 
-                const result = await updateStudent(payload);
+                const result = await updateStudent(id, payload);
 
-                expect(addOrUpdateStudent).toHaveBeenCalledWith(payload);
+                expect(addOrUpdateStudent).toHaveBeenCalledWith({ userId: 1, ...payload });
                 expect(result).toEqual({
                     message: "Student updated successfully"
                 });
             });
 
             test("should update partial student information", async () => {
+                const id = 1;
                 const payload = {
-                    studentId: 1,
                     phone: "9876543220"
                 };
 
+                findUserById.mockResolvedValue({ id: 1, role_id: 3 });
                 addOrUpdateStudent.mockResolvedValue({
                     status: true,
                     message: "Student updated successfully"
                 });
 
-                const result = await updateStudent(payload);
+                const result = await updateStudent(id, payload);
 
                 expect(result).toHaveProperty("message");
             });
@@ -429,62 +431,60 @@ describe("Student Service", () => {
 
         describe("Negative Test Cases", () => {
             test("should throw error when update fails", async () => {
+                const id = 1;
                 const payload = {
-                    studentId: 1,
                     name: "Updated Name"
                 };
 
+                findUserById.mockResolvedValue({ id: 1, role_id: 3 });
                 addOrUpdateStudent.mockResolvedValue({
                     status: false,
                     message: "Unable to update student"
                 });
 
-                await expect(updateStudent(payload)).rejects.toThrow(ApiError);
+                await expect(updateStudent(id, payload)).rejects.toThrow(ApiError);
             });
 
             test("should throw error for non-existent student", async () => {
+                const id = 999;
                 const payload = {
-                    studentId: 999,
                     name: "Updated Name"
                 };
 
-                addOrUpdateStudent.mockResolvedValue({
-                    status: false,
-                    message: "Student not found"
-                });
+                findUserById.mockResolvedValue(null);
 
-                await expect(updateStudent(payload)).rejects.toThrow(ApiError);
+                await expect(updateStudent(id, payload)).rejects.toThrow(ApiError);
             });
         });
 
         describe("Edge Test Cases", () => {
             test("should handle empty update payload", async () => {
-                const payload = {
-                    studentId: 1
-                };
+                const id = 1;
 
+                findUserById.mockResolvedValue({ id: 1, role_id: 3 });
                 addOrUpdateStudent.mockResolvedValue({
                     status: true,
                     message: "Student updated successfully"
                 });
 
-                const result = await updateStudent(payload);
+                const result = await updateStudent(id, {});
 
                 expect(result).toHaveProperty("message");
             });
 
             test("should handle null values in update", async () => {
+                const id = 1;
                 const payload = {
-                    studentId: 1,
                     phone: null
                 };
 
+                findUserById.mockResolvedValue({ id: 1, role_id: 3 });
                 addOrUpdateStudent.mockResolvedValue({
                     status: true,
                     message: "Student updated successfully"
                 });
 
-                const result = await updateStudent(payload);
+                const result = await updateStudent(id, payload);
 
                 expect(result).toHaveProperty("message");
             });

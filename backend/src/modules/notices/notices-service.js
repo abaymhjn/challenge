@@ -4,6 +4,7 @@ const {
   getNoticeById,
   addNewNotice,
   updateNoticeById,
+  deleteNoticeFromDB,
   manageNoticeStatus,
   getNotices,
   addNoticeRecipient,
@@ -71,6 +72,20 @@ const updateNotice = async (payload) => {
   }
 
   return { message: "Notice updated successfully" };
+};
+
+const deleteNotice = async (id) => {
+  const noticeDetail = await getNoticeById(id);
+  if (!noticeDetail) {
+    throw new ApiError(404, "Notice not found");
+  }
+
+  const affectedRow = await deleteNoticeFromDB(id);
+  if (affectedRow <= 0) {
+    throw new ApiError(500, "Unable to delete notice");
+  }
+
+  return { message: "Notice deleted successfully" };
 };
 
 const processNoticeStatus = async (payload) => {
@@ -176,6 +191,7 @@ module.exports = {
   fetchNoticeDetailById,
   addNotice,
   updateNotice,
+  deleteNotice,
   processNoticeStatus,
   processAddNoticeRecipient,
   processUpdateNoticeRecipient,

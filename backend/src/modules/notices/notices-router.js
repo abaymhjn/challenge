@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const noticeController = require("./notices-controller");
 const { checkApiAccess } = require("../../middlewares");
+const { validateRequest } = require("../../utils/validate-request");
+const { NoticeSchema, NoticeUpdateSchema, NoticeStatusSchema } = require("./notices-schema");
 
 router.get(
   "/recipients/list",
@@ -33,7 +35,7 @@ router.delete(
   checkApiAccess,
   noticeController.handleDeleteNoticeRecipient
 );
-router.post("/:id/status", checkApiAccess, noticeController.handleNoticeStatus);
+router.post("/:id/status", checkApiAccess, validateRequest(NoticeStatusSchema), noticeController.handleNoticeStatus);
 router.get(
   "/pending",
   checkApiAccess,
@@ -45,7 +47,8 @@ router.get(
   noticeController.handleFetchNoticeDetailById
 );
 router.get("", checkApiAccess, noticeController.handleFetchAllNotices);
-router.post("", checkApiAccess, noticeController.handleAddNotice);
-router.put("/:id", checkApiAccess, noticeController.handleUpdateNotice);
+router.post("", checkApiAccess, validateRequest(NoticeSchema), noticeController.handleAddNotice);
+router.put("/:id", checkApiAccess, validateRequest(NoticeUpdateSchema), noticeController.handleUpdateNotice);
+router.delete("/:id", checkApiAccess, noticeController.handleDeleteNotice);
 
 module.exports = { noticesRoutes: router };

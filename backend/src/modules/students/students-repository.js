@@ -1,4 +1,5 @@
 const { processDBRequest } = require("../../utils");
+const { db } = require("../../config");
 
 const getRoleId = async (roleName) => {
     const query = "SELECT id FROM roles WHERE name ILIKE $1";
@@ -21,8 +22,8 @@ const findAllStudents = async (payload) => {
         WHERE t1.role_id = 3`;
     let queryParams = [];
     if (name) {
-        query += ` AND t1.name = $${queryParams.length + 1}`;
-        queryParams.push(name);
+        query += ` AND t1.name ILIKE $${queryParams.length + 1}`;
+        queryParams.push(`%${name}%`);
     }
     if (className) {
         query += ` AND t3.class_name = $${queryParams.length + 1}`;
@@ -42,7 +43,6 @@ const findAllStudents = async (payload) => {
     (q, val, i) => q.replace(new RegExp(`\\$${i + 1}\\b`, 'g'), `'${val}'`),
     query
 );
-console.log("Raw Query:", rawQuery);
     const { rows } = await processDBRequest({ query, queryParams });
     return rows;
 }
@@ -102,17 +102,20 @@ const findStudentToSetStatus = async ({ userId, reviewerId, status }) => {
     return rowCount
 }
 
-const findStudentToUpdate = async (paylaod) => {
-    const { basicDetails: { name, email }, id } = paylaod;
-    const currentDate = new Date();
-    const query = `
-        UPDATE users
-        SET name = $1, email = $2, updated_dt = $3
-        WHERE id = $4;
-    `;
-    const queryParams = [name, email, currentDate, id];
-    const { rows } = await processDBRequest({ query, queryParams });
-    return rows;
+const deleteStudentFromDB = async (id) => {
+    const client = await db.connect();
+    try {
+        await client.query("BEGIN");
+        await client.query("DELETE FROM user_profiles WHERE user_id = $1", [id]);
+        const { rowCount } = await client.query("DELETE FROM users WHERE id = $1", [id]);
+        await client.query("COMMIT");
+        return rowCount;
+    } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+    } finally {
+        client.release();
+    }
 }
 
 module.exports = {
@@ -121,5 +124,5 @@ module.exports = {
     addOrUpdateStudent,
     findStudentDetail,
     findStudentToSetStatus,
-    findStudentToUpdate
+    deleteStudentFromDB
 };

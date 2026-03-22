@@ -30,7 +30,7 @@ export const FilterStudent: React.FC<FilterStudentProps> = ({ methods, searchStu
 
   const handleClassChange = (selectedClass: number | string) => {
     const classes = classResult?.classes || [];
-    const selectedSections = classes.find((cl) => cl.id === Number(selectedClass));
+    const selectedSections = classes.find((cl) => cl.name === selectedClass);
     if (selectedSections) {
       setSections(selectedSections.sections.length > 0 ? selectedSections.sections.split(',') : []);
     } else {
@@ -48,7 +48,7 @@ export const FilterStudent: React.FC<FilterStudentProps> = ({ methods, searchStu
           <FormControl fullWidth size='small'>
             <InputLabel id='student-class-select'>Class</InputLabel>
             <Controller
-              name='class'
+              name='className'
               control={control}
               render={({ field: { onChange, value } }) => (
                 <Select
@@ -62,7 +62,7 @@ export const FilterStudent: React.FC<FilterStudentProps> = ({ methods, searchStu
                   }}
                 >
                   {classResult?.classes?.map((c) => (
-                    <MenuItem key={c.id} value={c.id.toString()}>
+                    <MenuItem key={c.id} value={c.name}>
                       {c.name}
                     </MenuItem>
                   ))}
@@ -108,6 +108,7 @@ export const FilterStudent: React.FC<FilterStudentProps> = ({ methods, searchStu
           <TextField
             {...register('roll')}
             label='Roll'
+            type='number'
             fullWidth
             size='small'
             slotProps={{ inputLabel: { shrink: true } }}

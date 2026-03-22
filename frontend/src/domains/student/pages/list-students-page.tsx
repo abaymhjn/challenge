@@ -15,7 +15,7 @@ import { UserAccountBasic } from '@/components/user-account-basic';
 import { useGetStudentsQuery } from '../api/student-api';
 
 const initialState = {
-  class: '',
+  className: '',
   section: '',
   name: '',
   roll: ''

@@ -249,10 +249,18 @@ const manageNoticeStatus = async (payload) => {
   return rowCount;
 };
 
+const deleteNoticeFromDB = async (id) => {
+  const query = "DELETE FROM notices WHERE id = $1";
+  const queryParams = [id];
+  const { rowCount } = await processDBRequest({ query, queryParams });
+  return rowCount;
+};
+
 module.exports = {
   getNoticeById,
   addNewNotice,
   updateNoticeById,
+  deleteNoticeFromDB,
   getNoticeRecipientList,
   getNoticeRecipients,
   manageNoticeStatus,

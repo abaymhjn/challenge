@@ -6,11 +6,12 @@ import {
 } from '@/domains/auth/api';
 import { useHandleNoticeStatusMutation } from '@/domains/notice/api';
 import { useHandleStaffStatusMutation } from '@/domains/staff/api';
-import { useReviewStudentStatusMutation } from '@/domains/student/api';
+import { useDeleteStudentMutation, useReviewStudentStatusMutation } from '@/domains/student/api';
 
 export const useHandleMenuAction = () => {
   const [handleStaffStatus] = useHandleStaffStatusMutation();
   const [handleStudentStatus] = useReviewStudentStatusMutation();
+  const [deleteStudent] = useDeleteStudentMutation();
   const [resendVerificationEmail] = useResendVerificationEmailMutation();
   const [resendPwdSetupLink] = useResendPwdSetupLinkMutation();
   const [resetPwd] = useResetPwdMutation();
@@ -31,7 +32,8 @@ export const useHandleMenuAction = () => {
       APPROVE_NOTICE: () => handleNoticeStatus({ id: selectedId, status: 5 }).unwrap(),
       REJECT_NOTICE: () => handleNoticeStatus({ id: selectedId, status: 4 }).unwrap(),
       DELETE_NOTICE: () => handleNoticeStatus({ id: selectedId, status: 6 }).unwrap(),
-      DELETE_NOTICE_BY_SELF: () => handleNoticeStatus({ id: selectedId, status: 3 }).unwrap()
+      DELETE_NOTICE_BY_SELF: () => handleNoticeStatus({ id: selectedId, status: 3 }).unwrap(),
+      DELETE_STUDENT: () => deleteStudent(selectedId).unwrap()
     };
 
     if (actionHandlers[menuItemValue]) {

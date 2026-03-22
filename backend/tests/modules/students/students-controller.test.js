@@ -492,10 +492,7 @@ describe("Student Controller", () => {
 
                 await handleUpdateStudent(req, res, next);
 
-                expect(updateStudent).toHaveBeenCalledWith({
-                    ...updateData,
-                    studentId: "1"
-                });
+                expect(updateStudent).toHaveBeenCalledWith("1", updateData);
                 expect(res.json).toHaveBeenCalledWith({
                     message: "Student updated successfully"
                 });
@@ -515,10 +512,7 @@ describe("Student Controller", () => {
 
                 await handleUpdateStudent(req, res, next);
 
-                expect(updateStudent).toHaveBeenCalledWith({
-                    name: "Jane Smith",
-                    studentId: "1"
-                });
+                expect(updateStudent).toHaveBeenCalledWith("1", updateData);
             });
 
             test("should allow updating address fields", async () => {
@@ -536,7 +530,7 @@ describe("Student Controller", () => {
 
                 await handleUpdateStudent(req, res, next);
 
-                expect(updateStudent).toHaveBeenCalledWith(expect.objectContaining({
+                expect(updateStudent).toHaveBeenCalledWith("1", expect.objectContaining({
                     currentAddress: "456 New St",
                     permanentAddress: "789 Old St"
                 }));
@@ -591,7 +585,7 @@ describe("Student Controller", () => {
 
                 await handleUpdateStudent(req, res, next);
 
-                expect(updateStudent).toHaveBeenCalledWith({ studentId: "1" });
+                expect(updateStudent).toHaveBeenCalledWith("1", {});
             });
 
             test("should handle null values in update", async () => {
@@ -608,9 +602,8 @@ describe("Student Controller", () => {
 
                 await handleUpdateStudent(req, res, next);
 
-                expect(updateStudent).toHaveBeenCalledWith({
-                    phone: null,
-                    studentId: "1"
+                expect(updateStudent).toHaveBeenCalledWith("1", {
+                    phone: null
                 });
             });
         });

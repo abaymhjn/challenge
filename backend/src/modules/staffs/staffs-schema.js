@@ -135,8 +135,20 @@ const StaffStatusSchema = z.object({
     }).strict()
 });
 
+/**
+ * Staff update schema
+ */
+const StaffUpdateSchema = z.object({
+    body: StaffSchema.shape.body, // reuse same body validation
+        query: z.object({}).strict().optional(),
+        params: z.object({
+            id: z.string({ required_error: 'Staff ID is required' })
+        }).strict()
+});
+
 module.exports = {
     StaffSchema,
     StaffFilterSchema,
-    StaffStatusSchema
+    StaffStatusSchema,
+    StaffUpdateSchema
 };
