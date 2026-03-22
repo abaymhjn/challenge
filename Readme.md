@@ -1,211 +1,259 @@
-# Student Management System - Developer Skill Test
+# School Management System — Solution
 
-A comprehensive full-stack web application for managing school operations including students, staff, classes, notices, and leave management. This project serves as a skill assessment platform for **Frontend**, **Backend**, and **Blockchain** developers.
-
-## 🏗️ Project Architecture
-
-```
-skill-test/
-├── frontend/           # React + TypeScript + Material-UI
-├── backend/            # Node.js + Express + PostgreSQL
-├── go-service/         # Golang microservice for PDF reports
-├── seed_db/           # Database schema and seed data
-└── README.md          # This file
-```
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js (v16 or higher)
-- PostgreSQL (v12 or higher)
-- npm or yarn
-
-### 1. Backend Setup
-```bash
-cd backend
-npm install
-cp .env.example .env  # Configure your environment variables
-npm start
-```
-
-### 2. Frontend Setup
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-### 3. Access the Application
-- **Frontend**: http://localhost:5173
-- **Backend API**: http://localhost:5007
-- **Demo Credentials**: 
-  - Email: `admin@school-admin.com`
-  - Password: `3OU4zn3q6Zh9`
-
-### ** Database Setup **
-```bash
-# Create PostgreSQL database
-createdb school_mgmt
-
-# Run database migrations
-psql -d school_mgmt -f seed_db/tables.sql
-psql -d school_mgmt -f seed_db/seed-db.sql
-```
-
-## 🎯 Skill Test Problems
-
-### **Frontend Developer Challenge**
-**Fix "Add New Notice" Page**
-
-- **Location**: `/app/notices/add`
-- **Issue**: When clicking the 'Save' button, the 'description' field doesn't get saved
-- **Skills Tested**: React, Form handling, State management, API integration
-- **Expected Fix**: Ensure description field is properly bound and submitted
-
-### **Backend Developer Challenge**
-**Complete CRUD Operations in Student Management**
-
-- **Location**: `/src/modules/students/students-controller.js`
-- **Issue**: Implement missing CRUD operations for student management
-- **Skills Tested**: Node.js, Express, PostgreSQL, API design
-- **Expected Implementation**: Full Create, Read, Update, Delete operations
-
-## 🛠️ Technology Stack
-
-### Frontend
-- **Framework**: React 18 + TypeScript
-- **UI Library**: Material-UI (MUI) v6
-- **State Management**: Redux Toolkit + RTK Query
-- **Form Handling**: React Hook Form + Zod validation
-- **Build Tool**: Vite
-- **Code Quality**: ESLint, Prettier, Husky
-
-### Backend
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Database**: PostgreSQL
-- **Authentication**: JWT + CSRF protection
-- **Password Hashing**: Argon2
-- **Email Service**: Resend API
-- **Validation**: Zod
-
-### Database
-- **Primary DB**: PostgreSQL
-- **Schema**: Comprehensive school management schema
-- **Features**: Role-based access control, Leave management, Notice system
-
-## 📋 Features
-
-### Core Functionality
-- **Dashboard**: User statistics, notices, birthday celebrations, leave requests
-- **User Management**: Multi-role system (Admin, Student, Teacher, Custom roles)
-- **Academic Management**: Classes, sections, students, class teachers
-- **Leave Management**: Policy definition, request submission, approval workflow
-- **Notice System**: Create, approve, and distribute notices
-- **Staff Management**: Employee profiles, departments, role assignments
-- **Access Control**: Granular permissions system
-
-### Security Features
-- JWT-based authentication with refresh tokens
-- CSRF protection
-- Role-based access control (RBAC)
-- Password reset and email verification
-- Secure cookie handling
-
-## 🔧 Development Guidelines
-
-### Code Standards
-- **File Naming**: kebab-case for consistency across OS
-- **Import Style**: Absolute imports for cleaner code
-- **Code Formatting**: Prettier with consistent configuration
-- **Git Hooks**: Husky for pre-commit quality checks
-
-### Project Structure
-```
-frontend/src/
-├── api/           # API configuration and base setup
-├── assets/        # Static assets (images, styles)
-├── components/    # Shared/reusable components
-├── domains/       # Feature-based modules
-│   ├── auth/      # Authentication module
-│   ├── students/  # Student management
-│   ├── notices/   # Notice system
-│   └── ...
-├── hooks/         # Custom React hooks
-├── routes/        # Application routing
-├── store/         # Redux store configuration
-├── theme/         # MUI theme customization
-└── utils/         # Utility functions
-```
-
-```
-backend/src/
-├── config/        # Database and app configuration
-├── middlewares/   # Express middlewares
-├── modules/       # Feature-based API modules
-│   ├── auth/      # Authentication endpoints
-│   ├── students/  # Student CRUD operations
-│   ├── notices/   # Notice management
-│   └── ...
-├── routes/        # API route definitions
-├── shared/        # Shared utilities and repositories
-├── templates/     # Email templates
-└── utils/         # Helper functions
-```
-
-## 🧪 Testing Instructions
-
-### For Frontend Developers
-1. Navigate to the notices section
-2. Try to create a new notice with description
-3. Verify the description is saved correctly
-4. Test form validation and error handling
-
-### For Backend Developers
-1. Test all student CRUD endpoints using Postman/curl
-2. Verify proper error handling and validation
-3. Check database constraints and relationships
-4. Test authentication and authorization
-
-## 📚 API Documentation
-
-### Authentication Endpoints
-- `POST /api/v1/auth/login` - User login
-- `POST /api/v1/auth/logout` - User logout
-- `GET /api/v1/auth/refresh` - Refresh access token
-
-### Student Management
-- `GET /api/v1/students` - List all students
-- `POST /api/v1/students` - Create new student
-- `PUT /api/v1/students/:id` - Update student
-- `DELETE /api/v1/students/:id` - Delete student
-
-### Notice Management
-- `GET /api/v1/notices` - List notices
-- `POST /api/v1/notices` - Create notice
-- `PUT /api/v1/notices/:id` - Update notice
-- `DELETE /api/v1/notices/:id` - Delete notice
-
-### PDF Generation Service (Go)
-- `GET /api/v1/students/:id/report` - Generate and download a PDF report for a specific student.
-
-## 🤝 Contributing / Submission Instructions
-
-1. Complete the assigned task
-2. Push your results to a public repository
-3. Share the repository link along with a short Loom video demonstrating your results.
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-For questions and support:
-- Create an issue in the repository
-- Check existing documentation in `/frontend/README.md` and `/backend/README.md`
-- Review the database schema in `/seed_db/tables.sql`
+> Candidate submission for the Backend Developer Skill Test.
 
 ---
 
-**Happy Coding! 🚀**
+## Quick Start
+
+```bash
+# Database
+createdb school_mgmt
+psql -d school_mgmt -f seed_db/tables.sql
+psql -d school_mgmt -f seed_db/seed-db.sql
+
+# Backend
+cd backend && npm install && npm start     # http://localhost:5007
+
+# Frontend
+cd frontend && npm install && npm run dev  # http://localhost:5173
+```
+
+**Demo credentials:** `admin@school-admin.com` / `3OU4zn3q6Zh9`
+
+---
+
+## What Was Implemented
+
+### Task 1 — Complete Student CRUD (Backend)
+
+The original `students-controller.js` had `// write your code` placeholders in every handler. All handlers were empty.
+
+**Implemented all 5 student endpoints:**
+
+| Endpoint | Handler | What was done |
+|----------|---------|---------------|
+| `GET /api/v1/students` | `handleGetAllStudents` | Extracts query filters, calls service, returns student list |
+| `POST /api/v1/students` | `handleAddStudent` | Passes request body to service, returns 201 |
+| `GET /api/v1/students/:id` | `handleGetStudentDetail` | Fetches single student by ID |
+| `PUT /api/v1/students/:id` | `handleUpdateStudent` | Updates student profile |
+| `POST /api/v1/students/:id/status` | `handleStudentStatus` | Activates / deactivates student |
+
+**Added missing DELETE endpoint** (not in original at all):
+
+```
+DELETE /api/v1/students/:id
+```
+
+- **Controller** — `handleDeleteStudent`
+- **Service** — `deleteStudent(id)`: validates student exists, then deletes
+- **Repository** — `deleteStudentFromDB(id)`: uses a transaction to delete from `user_profiles` then `users`
+- **Router** — `router.delete("/:id", checkApiAccess, studentController.handleDeleteStudent)`
+
+**Why hard-delete with a transaction?** The original router had no middleware at all. After adding `checkApiAccess` + `validateRequest`, the student records only belong to students (role-specific), so a real DELETE is appropriate. The transaction ensures both `user_profiles` and `users` rows are removed atomically — if either fails, both are rolled back.
+
+---
+
+**Fixed `updateStudent` service signature:**
+
+Original had `updateStudent(payload)` (single argument). The controller passes `(id, payload)`, so the service was never receiving the student ID:
+
+```js
+// Original (broken):
+const updateStudent = async (payload) => {
+    const result = await addOrUpdateStudent(payload);
+
+// Fixed:
+const updateStudent = async (id, payload) => {
+    await checkStudentId(Number(id));
+    const result = await addOrUpdateStudent({ userId: Number(id), ...payload });
+```
+
+---
+
+**Added request validation and auth middleware to student router:**
+
+Original router had no middleware on any route:
+
+```js
+// Original (no auth, no validation):
+router.get("", studentController.handleGetAllStudents);
+router.post("", studentController.handleAddStudent);
+
+// Fixed:
+router.get("", checkApiAccess, validateRequest(StudentFilterSchema), studentController.handleGetAllStudents);
+router.post("", checkApiAccess, validateRequest(StudentSchema), studentController.handleAddStudent);
+router.put("/:id", checkApiAccess, validateRequest(StudentUpdateSchema), studentController.handleUpdateStudent);
+router.post("/:id/status", checkApiAccess, validateRequest(StudentStatusSchema), studentController.handleStudentStatus);
+router.delete("/:id", checkApiAccess, studentController.handleDeleteStudent);
+```
+
+---
+
+**Improved student search** in repository — changed exact match to case-insensitive partial match:
+
+```js
+// Original:
+query += ` AND t1.name = $${queryParams.length + 1}`;
+queryParams.push(name);
+
+// Fixed:
+query += ` AND t1.name ILIKE $${queryParams.length + 1}`;
+queryParams.push(`%${name}%`);
+```
+
+---
+
+**Cleaned up dead code** in `students-repository.js`:
+
+Removed `findStudentToUpdate()` — it was never imported or called anywhere, and had a mismatched payload structure (`basicDetails.name` vs actual API shape).
+
+---
+
+### Task 2 — Fix Notice Description Not Saving (Frontend)
+
+The `<TextField>` for description in `notice-form.tsx` was registered under the wrong field name:
+
+```tsx
+// Original (broken) — line 89:
+{...register('content')}
+
+// Fixed:
+{...register('description')}
+```
+
+The Zod schema, error messages (`errors.description`), and the backend database INSERT all expected `description`. The form was submitting the field as `content`, which was `undefined` in the payload, resulting in NULL being saved to the database every time.
+
+---
+
+### Task 3 — Notice DELETE Endpoint (Bonus)
+
+Notices also had no DELETE endpoint. Added across all layers:
+
+```
+DELETE /api/v1/notices/:id
+```
+
+- **Controller** — `handleDeleteNotice`: extracts `id`, calls `deleteNotice`
+- **Service** — `deleteNotice(id)`: checks notice exists (404 if not), then deletes
+- **Repository** — `deleteNoticeFromDB(id)`: `DELETE FROM notices WHERE id = $1`
+- **Router** — `router.delete("/:id", checkApiAccess, noticeController.handleDeleteNotice)`
+
+**Added validation to notice router** — original had no `validateRequest` on POST/PUT:
+
+```js
+router.post("", checkApiAccess, validateRequest(NoticeSchema), noticeController.handleAddNotice);
+router.put("/:id", checkApiAccess, validateRequest(NoticeUpdateSchema), noticeController.handleUpdateNotice);
+router.post("/:id/status", checkApiAccess, validateRequest(NoticeStatusSchema), noticeController.handleNoticeStatus);
+```
+
+---
+
+### Task 4 — Test Suite (151 Tests)
+
+The original had no test files at all. Wrote a full test suite:
+
+```
+Test Suites: 3 passed, 3 total
+Tests:       151 passed, 151 total
+
+students-service.test.js      — 39 tests   (unit — mocks repository layer)
+students-controller.test.js   — 40 tests   (unit — mocks service layer)
+students-integration.test.js  — 72 tests   (integration — hits real DB)
+```
+
+```bash
+cd backend && npm test
+```
+
+**Key fix for integration tests — cookie-parser first-occurrence-wins:**
+
+Login calls `clearAllCookies()` before `setAllCookies()`, producing 6 `Set-Cookie` headers: 3 empty clear cookies first, then 3 real tokens. `cookie-parser` takes the first occurrence of each cookie name — so `accessToken=''` was overwriting the real token. All 72 tests were returning 401 until this was discovered.
+
+Fix: filter empty cookie values when building the test `Cookie` header:
+
+```js
+authCookies = rawCookies
+    .map(c => c.split(';')[0])
+    .filter(c => { const v = c.split('=')[1]; return v && v.length > 0; })
+    .join('; ');
+```
+
+Also required: all routes use `csrfProtection` middleware — tests must send the `x-csrf-token` header on every request.
+
+---
+
+### Task 5 — Postman Collection
+
+Fixed `School_Management_API.postman_collection.json` so it works end-to-end:
+
+**Login script fix:** `pm.response.headers.get('Set-Cookie')` returns only the first `Set-Cookie` header (the empty clear cookie). Fixed by iterating all headers to find the real csrfToken:
+
+```js
+pm.response.headers.all().forEach(function(header) {
+    if (header.key.toLowerCase() === 'set-cookie') {
+        var match = header.value.match(/csrfToken=([^;]+)/);
+        if (match && match[1] && match[1].length > 5) {
+            csrfToken = match[1];
+        }
+    }
+});
+pm.collectionVariables.set('csrfToken', csrfToken);
+```
+
+**Other fixes:**
+- Removed `Authorization: Bearer {{accessToken}}` headers (API uses HttpOnly cookies, not Bearer tokens)
+- Added `x-csrf-token: {{csrfToken}}` to all authenticated requests
+- Fixed Create Student body field names (`class`/`section`, added required `guardianName`, `guardianPhone`, `relationOfGuardian`)
+- Fixed Leave Management URLs to match actual router paths
+- Added collection variables: `studentId`, `noticeId`, `staffId`, `recipientId`, `leaveRequestId`
+- Added Delete Student request (was missing entirely)
+
+---
+
+## Files Changed vs Original
+
+### Backend
+
+| File | Change |
+|------|--------|
+| `students-controller.js` | Implemented all 5 handlers + added `handleDeleteStudent` |
+| `students-service.js` | Fixed `updateStudent(id, payload)` signature + added `deleteStudent` |
+| `students-repository.js` | Added `deleteStudentFromDB` (transaction), ILIKE search, removed dead code |
+| `sudents-router.js` | Added `checkApiAccess` + `validateRequest` middleware on all routes + DELETE route |
+| `students-schema.js` | Added `StudentSchema`, `StudentFilterSchema`, `StudentStatusSchema`, `StudentUpdateSchema` |
+| `notices-controller.js` | Added `handleDeleteNotice` |
+| `notices-service.js` | Added `deleteNotice` |
+| `notices-repository.js` | Added `deleteNoticeFromDB` |
+| `notices-router.js` | Added `validateRequest` on POST/PUT/status + DELETE route |
+| `notices-schema.js` | Added `NoticeSchema`, `NoticeUpdateSchema`, `NoticeStatusSchema` |
+| `jest.setup.js` | Added `RESEND_API_KEY` env var so email module loads during tests |
+
+### Frontend
+
+| File | Change |
+|------|--------|
+| `notice-form.tsx` | Fixed `register('content')` → `register('description')` |
+
+### New Files
+
+| File | Description |
+|------|-------------|
+| `backend/tests/modules/students/students-service.test.js` | 39 unit tests for service layer |
+| `backend/tests/modules/students/students-controller.test.js` | 40 unit tests for controller layer |
+| `backend/tests/modules/students/students-integration.test.js` | 72 integration tests against real DB |
+| `School_Management_API.postman_collection.json` | Working Postman collection with CSRF flow |
+| `BACKEND_ANALYSIS_REPORT.md` | Detailed analysis of all modules and bugs |
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Backend | Node.js, Express.js |
+| Database | PostgreSQL |
+| Auth | JWT (HttpOnly cookies) + CSRF protection |
+| Validation | Zod |
+| Testing | Jest + Supertest |
+| Frontend | React 18, TypeScript, MUI, Redux Toolkit, React Hook Form |
