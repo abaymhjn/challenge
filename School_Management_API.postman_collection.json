@@ -1,0 +1,1214 @@
+{
+  "info": {
+    "_postman_id": "school-mgmt-api-v1",
+    "name": "School Management System API",
+    "description": "Comprehensive API collection for School Management System.\n\n## Setup\n1. Set `baseUrl` collection variable to `http://localhost:5007` (already set).\n2. Run **Login** first — it automatically saves the `csrfToken` to collection variables.\n3. Postman's cookie jar handles `accessToken` and `refreshToken` automatically.\n4. All protected requests use `x-csrf-token: {{csrfToken}}` header (already configured).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "description": "Authentication endpoints for user login, logout, and token refresh.",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    // Iterate ALL Set-Cookie headers to find the real csrfToken",
+                  "    // (login clears old cookies first, then sets new ones)",
+                  "    var csrfToken = null;",
+                  "    pm.response.headers.all().forEach(function(header) {",
+                  "        if (header.key.toLowerCase() === 'set-cookie') {",
+                  "            var match = header.value.match(/csrfToken=([^;]+)/);",
+                  "            if (match && match[1] && match[1].length > 5) {",
+                  "                csrfToken = match[1];",
+                  "            }",
+                  "        }",
+                  "    });",
+                  "    if (csrfToken) {",
+                  "        pm.collectionVariables.set('csrfToken', csrfToken);",
+                  "        console.log('CSRF Token saved: ' + csrfToken);",
+                  "    }",
+                  "    pm.test('Login successful', function() {",
+                  "        pm.expect(pm.response.code).to.equal(200);",
+                  "    });",
+                  "    pm.test('Response has user info', function() {",
+                  "        var json = pm.response.json();",
+                  "        pm.expect(json).to.have.property('id');",
+                  "        pm.expect(json).to.have.property('role');",
+                  "    });",
+                  "    pm.test('CSRF token saved', function() {",
+                  "        pm.expect(pm.collectionVariables.get('csrfToken')).to.be.a('string').and.not.empty;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin@school-admin.com\",\n  \"password\": \"3OU4zn3q6Zh9\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    // Extract new csrfToken from Set-Cookie headers",
+                  "    var csrfToken = null;",
+                  "    pm.response.headers.all().forEach(function(header) {",
+                  "        if (header.key.toLowerCase() === 'set-cookie') {",
+                  "            var match = header.value.match(/csrfToken=([^;]+)/);",
+                  "            if (match && match[1] && match[1].length > 5) {",
+                  "                csrfToken = match[1];",
+                  "            }",
+                  "        }",
+                  "    });",
+                  "    if (csrfToken) {",
+                  "        pm.collectionVariables.set('csrfToken', csrfToken);",
+                  "        console.log('New CSRF Token saved: ' + csrfToken);",
+                  "    }",
+                  "    pm.test('Token refreshed successfully', function() {",
+                  "        pm.expect(pm.response.code).to.equal(200);",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "refresh"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "logout"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Student Management",
+      "description": "Student CRUD operations and status management.\nAll requests require login first (cookies are sent automatically by Postman).",
+      "item": [
+        {
+          "name": "Get All Students",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 or 404', function() {",
+                  "    pm.expect([200, 404]).to.include(pm.response.code);",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "    pm.test('Response has students array', function() {",
+                  "        var json = pm.response.json();",
+                  "        pm.expect(json.students).to.be.an('array');",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/students",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "students"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "className",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "section",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "roll",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Students - Filter by Class",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/students?className=Grade 10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "students"],
+              "query": [
+                {
+                  "key": "className",
+                  "value": "Grade 10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Students - Filter by Section",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/students?section=A",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "students"],
+              "query": [
+                {
+                  "key": "section",
+                  "value": "A"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Students - Search by Name",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/students?name=John",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "students"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "John"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Student Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/students/{{studentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "students", "{{studentId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Student",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function() {",
+                  "    pm.expect(pm.response.code).to.equal(201);",
+                  "});",
+                  "pm.test('Response has message', function() {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.message).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"9876543210\",\n  \"gender\": \"Male\",\n  \"dob\": \"2005-01-15\",\n  \"class\": \"Grade 10\",\n  \"section\": \"A\",\n  \"roll\": 101,\n  \"admissionDate\": \"2023-01-15\",\n  \"fatherName\": \"Robert Doe\",\n  \"fatherPhone\": \"9876543211\",\n  \"motherName\": \"Mary Doe\",\n  \"motherPhone\": \"9876543212\",\n  \"guardianName\": \"Robert Doe\",\n  \"guardianPhone\": \"9876543211\",\n  \"relationOfGuardian\": \"Father\",\n  \"currentAddress\": \"123 Main Street\",\n  \"permanentAddress\": \"123 Main Street\",\n  \"systemAccess\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/students",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "students"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Student",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "pm.test('Response has message', function() {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.message).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe Updated\",\n  \"phone\": \"9876543220\",\n  \"currentAddress\": \"456 New Street\",\n  \"permanentAddress\": \"456 New Street\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/students/{{studentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "students", "{{studentId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change Student Status - Activate",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "pm.test('Response indicates success', function() {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.message).to.include('successfully');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/students/{{studentId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "students", "{{studentId}}", "status"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change Student Status - Deactivate",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/students/{{studentId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "students", "{{studentId}}", "status"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Student",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function() {",
+                  "    pm.expect(pm.response.code).to.equal(200);",
+                  "});",
+                  "pm.test('Response confirms deletion', function() {",
+                  "    var json = pm.response.json();",
+                  "    pm.expect(json.message).to.include('deleted');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/students/{{studentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "students", "{{studentId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Notice Management",
+      "description": "Notice system endpoints for creating and managing notices.",
+      "item": [
+        {
+          "name": "Get All Notices",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notices",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notices"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Notice Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notices/{{noticeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notices", "{{noticeId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Notice",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Important School Announcement\",\n  \"description\": \"This is an important notice for all students regarding the upcoming exams.\",\n  \"recipientType\": \"all\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notices",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notices"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Notice",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated School Announcement\",\n  \"description\": \"This is an updated notice for all students.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notices/{{noticeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notices", "{{noticeId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Notice Status - Publish",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notices/{{noticeId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notices", "{{noticeId}}", "status"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Notice Recipients",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notices/recipients",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notices", "recipients"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Notice Recipients List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notices/recipients/list",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notices", "recipients", "list"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Notice Recipient Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notices/recipients/{{recipientId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notices", "recipients", "{{recipientId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Notice Recipient",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notice_id\": 1,\n  \"role_id\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notices/recipients",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notices", "recipients"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Notice Recipient",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role_id\": 4\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notices/recipients/{{recipientId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notices", "recipients", "{{recipientId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Notice Recipient",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notices/recipients/{{recipientId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notices", "recipients", "{{recipientId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Leave Management",
+      "description": "Leave request and policy management endpoints.",
+      "item": [
+        {
+          "name": "Get All Leave Policies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave/policies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "leave", "policies"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Leave Policies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave/policies/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "leave", "policies", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Leave Policy",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Annual Leave\",\n  \"daysAllowed\": 15,\n  \"roleId\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave/policies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "leave", "policies"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Leave Request History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "leave", "request"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Apply Leave Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromDt\": \"2026-04-01\",\n  \"toDt\": \"2026-04-03\",\n  \"note\": \"Personal reasons\",\n  \"leavePolicyId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "leave", "request"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Leave Request",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromDt\": \"2026-04-01\",\n  \"toDt\": \"2026-04-05\",\n  \"note\": \"Updated reason\",\n  \"leavePolicyId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave/request/{{leaveRequestId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "leave", "request", "{{leaveRequestId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Leave Request",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave/request/{{leaveRequestId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "leave", "request", "{{leaveRequestId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Pending Leave Requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave/pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "leave", "pending"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Approve Leave Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave/pending/{{leaveRequestId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "leave", "pending", "{{leaveRequestId}}", "status"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Leave Request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/leave/pending/{{leaveRequestId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "leave", "pending", "{{leaveRequestId}}", "status"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Staff Management",
+      "description": "Staff member management endpoints.",
+      "item": [
+        {
+          "name": "Get All Staffs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/staffs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "staffs"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "roleId",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "name",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Staff Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/staffs/{{staffId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "staffs", "{{staffId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Staff",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Teacher\",\n  \"email\": \"jane.teacher@school.com\",\n  \"phone\": \"9876543210\",\n  \"gender\": \"Female\",\n  \"dob\": \"1990-05-20\",\n  \"roleId\": 2,\n  \"departmentId\": 1,\n  \"joinDt\": \"2024-01-01\",\n  \"currentAddress\": \"789 School Street\",\n  \"permanentAddress\": \"789 School Street\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/staffs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "staffs"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Staff",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Teacher Updated\",\n  \"phone\": \"9876543220\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/staffs/{{staffId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "staffs", "{{staffId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change Staff Status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-csrf-token",
+                "value": "{{csrfToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/staffs/{{staffId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "staffs", "{{staffId}}", "status"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5007",
+      "type": "string"
+    },
+    {
+      "key": "csrfToken",
+      "value": "",
+      "type": "string",
+      "description": "Auto-populated by the Login request test script"
+    },
+    {
+      "key": "studentId",
+      "value": "1",
+      "type": "string",
+      "description": "Student ID for Get Detail / Update / Delete / Status endpoints"
+    },
+    {
+      "key": "noticeId",
+      "value": "1",
+      "type": "string",
+      "description": "Notice ID for Get Detail / Update / Status endpoints"
+    },
+    {
+      "key": "recipientId",
+      "value": "1",
+      "type": "string",
+      "description": "Notice recipient ID"
+    },
+    {
+      "key": "staffId",
+      "value": "1",
+      "type": "string",
+      "description": "Staff ID for Get Detail / Update / Status endpoints"
+    },
+    {
+      "key": "leaveRequestId",
+      "value": "1",
+      "type": "string",
+      "description": "Leave request ID for Update / Delete / Approve / Reject"
+    }
+  ]
+}
